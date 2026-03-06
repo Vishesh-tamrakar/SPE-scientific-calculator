@@ -9,9 +9,14 @@
     <artifactId>scientific-calculator</artifactId>
     <version>1.0</version>
 
+    <!-- ADD THIS PART -->
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
     <dependencies>
 
-        <!-- JUnit for testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
