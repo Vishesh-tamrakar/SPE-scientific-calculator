@@ -1,0 +1,11 @@
+- hosts: localhost
+  become: yes
+  tasks:
+
+    - name: Pull Docker Image
+      docker_container:
+        name: calculator-container
+        image: 28vishesh/calculator:latest
+        state: started
+        recreate: yes
+        tty: yes
