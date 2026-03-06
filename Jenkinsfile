@@ -21,5 +21,20 @@ pipeline {
             }
         }
 
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                                 usernameVariable: 'DOCKER_USER',
+                                 passwordVariable: 'DOCKER_PASS')]) {
+
+                    sh '''
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
+                    docker tag calculator-app $DOCKER_USER/calculator:latest
+                    docker push $DOCKER_USER/calculator:latest
+                    '''
+                }
+            }
+        }
+
     }
 }
