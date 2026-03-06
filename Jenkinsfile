@@ -24,8 +24,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
-                                 usernameVariable: 'DOCKER_USER',
-                                 passwordVariable: 'DOCKER_PASS')]) {
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS')]) {
 
                     sh '''
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -33,6 +33,12 @@ pipeline {
                     docker push $DOCKER_USER/calculator:latest
                     '''
                 }
+            }
+        }
+
+        stage('Deploy using Ansible') {
+            steps {
+                sh 'ansible-playbook -i inventory deploy.yml'
             }
         }
 
