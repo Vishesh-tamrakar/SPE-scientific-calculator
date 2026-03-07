@@ -66,7 +66,8 @@ Pipeline completed successfully.
 
 Console Output:
 ${env.BUILD_URL}
-"""
+""",
+                recipientProviders: [developers(), requestor()]
             )
         }
 
@@ -82,7 +83,8 @@ Build Number: ${env.BUILD_NUMBER}
 
 Check Jenkins console logs:
 ${env.BUILD_URL}
-"""
+""",
+                recipientProviders: [developers(), requestor()]
             )
         }
 

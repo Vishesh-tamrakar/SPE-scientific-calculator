@@ -1,6 +1,6 @@
 package org.vishesh;
 
-import java.util.Scanner
+import java.util.Scanner;
 
 public class Calculator {
 
