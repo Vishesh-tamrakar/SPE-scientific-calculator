@@ -43,4 +43,36 @@ pipeline {
         }
 
     }
+
+    post {
+
+        success {
+            emailext(
+                to: 'visheshtamrakar1@gmail.com',
+                subject: "SUCCESS: ${env.JOB_NAME} Build #${env.BUILD_NUMBER}",
+                body: """Build succeeded!
+
+Job: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Build URL: ${env.BUILD_URL}
+
+Docker image successfully built and deployed."""
+            )
+        }
+
+        failure {
+            emailext(
+                to: 'visheshtamrakar1@gmail.com',
+                subject: "FAILED: ${env.JOB_NAME} Build #${env.BUILD_NUMBER}",
+                body: """Build failed!
+
+Job: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Build URL: ${env.BUILD_URL}
+
+Please check the Jenkins logs for details."""
+            )
+        }
+
+    }
 }
