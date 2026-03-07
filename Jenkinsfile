@@ -1,58 +1,84 @@
 pipeline {
-    agent any
+agent any
 
-    stages {
+```
+stages {
 
-        stage('Checkout Code') {
-            steps {
-                checkout scm
-            }
+    stage('Checkout Code') {
+        steps {
+            checkout scm
         }
+    }
 
-        stage('Build') {
-            steps {
-                sh 'mvn clean package'
-            }
+    stage('Build') {
+        steps {
+            sh 'mvn clean package'
         }
+    }
 
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t calculator-app .'
-            }
+    stage('Build Docker Image') {
+        steps {
+            sh 'docker build -t calculator-app .'
         }
+    }
 
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
+    stage('Push Docker Image') {
+        steps {
+            withCredentials([usernamePassword(
+                credentialsId: 'dockerhub-creds',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS'
+            )]) {
 
-                    sh '''
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    docker tag calculator-app $DOCKER_USER/calculator:latest
-                    docker push $DOCKER_USER/calculator:latest
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy using Ansible') {
-            steps {
-                sh 'ansible-playbook -i inventory deploy.yml'
+                sh '''
+                echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                docker tag calculator-app $DOCKER_USER/calculator:latest
+                docker push $DOCKER_USER/calculator:latest
+                '''
             }
         }
     }
 
-    post {
+    stage('Deploy using Ansible') {
+        steps {
+            sh 'ansible-playbook -i inventory deploy.yml'
+        }
+    }
+}
 
-        failure {
-            emailext(
-                to: 'visheshtamrakar1@gmail.com',
-                from: 'visheshtamrakar1@gmail.com',
-                subject: "BUILD FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
+post {
+
+    success {
+        emailext(
+            to: 'visheshtamrakar1@gmail.com',
+            from: 'visheshtamrakar1@gmail.com',
+            subject: "BUILD SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+```
+
+Build SUCCESS
+
+Job: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+
+The pipeline executed successfully.
+
+Details:
+${env.BUILD_URL}
+""",
+mimeType: 'text/plain'
+)
+}
+
+```
+    failure {
+        emailext(
+            to: 'visheshtamrakar1@gmail.com',
+            from: 'visheshtamrakar1@gmail.com',
+            subject: "BUILD FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+```
+
 Build FAILED
 
 Job: ${env.JOB_NAME}
@@ -61,16 +87,19 @@ Build Number: ${env.BUILD_NUMBER}
 Check console output:
 ${env.BUILD_URL}
 """,
-                mimeType: 'text/plain'
-            )
-        }
+mimeType: 'text/plain'
+)
+}
 
-        changed {
-            emailext(
-                to: 'visheshtamrakar1@gmail.com',
-                from: 'visheshtamrakar1@gmail.com',
-                subject: "BUILD FIXED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
+```
+    changed {
+        emailext(
+            to: 'visheshtamrakar1@gmail.com',
+            from: 'visheshtamrakar1@gmail.com',
+            subject: "BUILD FIXED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+```
+
 Good news!
 
 The build has been FIXED.
@@ -81,9 +110,8 @@ Build Number: ${env.BUILD_NUMBER}
 Details:
 ${env.BUILD_URL}
 """,
-                mimeType: 'text/plain'
-            )
-        }
-
-    }
+mimeType: 'text/plain'
+)
+}
+}
 }
