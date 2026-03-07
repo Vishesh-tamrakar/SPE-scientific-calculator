@@ -23,9 +23,11 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
 
                     sh '''
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -46,31 +48,41 @@ pipeline {
 
     post {
 
+        always {
+            echo "Pipeline finished"
+        }
+
         success {
             emailext(
                 to: 'visheshtamrakar1@gmail.com',
-                subject: "SUCCESS: ${env.JOB_NAME} Build #${env.BUILD_NUMBER}",
-                body: """Build succeeded!
+                subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Build succeeded.
 
 Job: ${env.JOB_NAME}
 Build Number: ${env.BUILD_NUMBER}
-Build URL: ${env.BUILD_URL}
 
-Docker image successfully built and deployed."""
+Pipeline completed successfully.
+
+Console Output:
+${env.BUILD_URL}
+"""
             )
         }
 
         failure {
             emailext(
                 to: 'visheshtamrakar1@gmail.com',
-                subject: "FAILED: ${env.JOB_NAME} Build #${env.BUILD_NUMBER}",
-                body: """Build failed!
+                subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Build failed.
 
 Job: ${env.JOB_NAME}
 Build Number: ${env.BUILD_NUMBER}
-Build URL: ${env.BUILD_URL}
 
-Please check the Jenkins logs for details."""
+Check Jenkins console logs:
+${env.BUILD_URL}
+"""
             )
         }
 
