@@ -30,7 +30,7 @@ pipeline {
                 )]) {
 
                     sh '''
-                    docker login -u $DOCKER_USER -p $DOCKER_PASS
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                     docker tag calculator-app $DOCKER_USER/calculator:latest
                     docker push $DOCKER_USER/calculator:latest
                     '''
@@ -43,48 +43,41 @@ pipeline {
                 sh 'ansible-playbook -i inventory deploy.yml'
             }
         }
-
     }
 
     post {
 
-        always {
-            echo "Pipeline finished"
-        }
-
-        success {
-            emailext(
-                to: 'visheshtamrakar1@gmail.com',
-                subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-Build succeeded.
-
-Job: ${env.JOB_NAME}
-Build Number: ${env.BUILD_NUMBER}
-
-Pipeline completed successfully.
-
-Console Output:
-${env.BUILD_URL}
-""",
-                recipientProviders: [developers(), requestor()]
-            )
-        }
-
         failure {
             emailext(
                 to: 'visheshtamrakar1@gmail.com',
-                subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "BUILD FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
-Build failed.
+Build FAILED.
 
 Job: ${env.JOB_NAME}
 Build Number: ${env.BUILD_NUMBER}
 
-Check Jenkins console logs:
+Check console output:
 ${env.BUILD_URL}
-""",
-                recipientProviders: [developers(), requestor()]
+"""
+            )
+        }
+
+        changed {
+            emailext(
+                to: 'visheshtamrakar1@gmail.com',
+                subject: "BUILD FIXED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Good news!
+
+The build has been FIXED.
+
+Job: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+
+Details:
+${env.BUILD_URL}
+"""
             )
         }
 
