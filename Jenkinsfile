@@ -49,11 +49,38 @@ stages {
 post {
 
     success {
-        emailext(
-            to: 'visheshtamrakar1@gmail.com',
-            from: 'visheshtamrakar1@gmail.com',
-            subject: "BUILD SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            body: """
+        script {
+            if (currentBuild.previousBuild != null &&
+                currentBuild.previousBuild.result == "FAILURE") {
+
+                emailext(
+                    to: 'visheshtamrakar1@gmail.com',
+                    from: 'visheshtamrakar1@gmail.com',
+                    subject: "BUILD FIXED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+
+
+Good news!
+
+The build has been FIXED.
+
+Job: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+
+Details:
+${env.BUILD_URL}
+""",
+mimeType: 'text/plain'
+)
+
+
+            } else {
+
+                emailext(
+                    to: 'visheshtamrakar1@gmail.com',
+                    from: 'visheshtamrakar1@gmail.com',
+                    subject: "BUILD SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
 
 
 Build SUCCESS
@@ -68,8 +95,11 @@ ${env.BUILD_URL}
 """,
 mimeType: 'text/plain'
 )
-}
 
+
+            }
+        }
+    }
 
     failure {
         emailext(
@@ -92,26 +122,7 @@ mimeType: 'text/plain'
 }
 
 
-    changed {
-        emailext(
-            to: 'visheshtamrakar1@gmail.com',
-            from: 'visheshtamrakar1@gmail.com',
-            subject: "BUILD FIXED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            body: """
-
-
-Good news!
-
-The build has been FIXED.
-
-Job: ${env.JOB_NAME}
-Build Number: ${env.BUILD_NUMBER}
-
-Details:
-${env.BUILD_URL}
-""",
-mimeType: 'text/plain'
-)
 }
-}
+
+
 }
