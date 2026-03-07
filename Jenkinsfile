@@ -50,22 +50,25 @@ pipeline {
         failure {
             emailext(
                 to: 'visheshtamrakar1@gmail.com',
+                from: 'visheshtamrakar1@gmail.com',
                 subject: "BUILD FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
-Build FAILED.
+Build FAILED
 
 Job: ${env.JOB_NAME}
 Build Number: ${env.BUILD_NUMBER}
 
 Check console output:
 ${env.BUILD_URL}
-"""
+""",
+                mimeType: 'text/plain'
             )
         }
 
         changed {
             emailext(
                 to: 'visheshtamrakar1@gmail.com',
+                from: 'visheshtamrakar1@gmail.com',
                 subject: "BUILD FIXED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
 Good news!
@@ -77,7 +80,8 @@ Build Number: ${env.BUILD_NUMBER}
 
 Details:
 ${env.BUILD_URL}
-"""
+""",
+                mimeType: 'text/plain'
             )
         }
 
