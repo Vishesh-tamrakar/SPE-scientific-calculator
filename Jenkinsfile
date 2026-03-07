@@ -1,7 +1,7 @@
 pipeline {
 agent any
 
-```
+
 stages {
 
     stage('Checkout Code') {
@@ -54,7 +54,7 @@ post {
             from: 'visheshtamrakar1@gmail.com',
             subject: "BUILD SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
-```
+
 
 Build SUCCESS
 
@@ -70,14 +70,14 @@ mimeType: 'text/plain'
 )
 }
 
-```
+
     failure {
         emailext(
             to: 'visheshtamrakar1@gmail.com',
             from: 'visheshtamrakar1@gmail.com',
             subject: "BUILD FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
-```
+
 
 Build FAILED
 
@@ -91,14 +91,14 @@ mimeType: 'text/plain'
 )
 }
 
-```
+
     changed {
         emailext(
             to: 'visheshtamrakar1@gmail.com',
             from: 'visheshtamrakar1@gmail.com',
             subject: "BUILD FIXED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
-```
+
 
 Good news!
 
